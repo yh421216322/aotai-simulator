@@ -180,7 +180,8 @@ function savePhotoAlbum() {
 
 // ==================== 实景查看系统 ====================
 
-let sceneryViewActive = false;
+// 注意：sceneryViewActive 变量在 visuals.js 中定义，这里不要重复声明
+// let sceneryViewActive = false;
 let currentSceneryData = null;
 
 /**

@@ -3196,7 +3196,7 @@ function updateUI() {
     
     if (locationEl) locationEl.textContent = node.name;
     if (dayEl) dayEl.textContent = gameState.day;
-    if (weatherEl) {
+    if (weatherEl && gameState.weather) {
         weatherEl.innerHTML = `${gameState.weather.icon} ${gameState.weather.name} ${gameState.weather.temperature}°C`;
     }
     
