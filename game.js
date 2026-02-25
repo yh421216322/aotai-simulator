@@ -1629,6 +1629,8 @@ function isDifficultyUnlocked(difficultyId) {
 
 function showDifficultyScreen() {
     renderDifficultyOptions();
+    // 默认选中普通难度
+    selectDifficulty('normal');
     showScreen("difficulty-screen");
 }
 
