@@ -1,0 +1,5 @@
+{
+  "buildCommand": null,
+  "startCommand": "python3 -m http.server $PORT",
+  "publishDirectory": "."
+}

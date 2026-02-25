@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鳌太线模拟器 - 秦岭穿越生存游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- 游戏标题 -->
+        <header class="game-header">
+            <h1>🏔️ 鳌太线模拟器</h1>
+            <p class="subtitle">秦岭鳌山-太白山穿越生存挑战 v2.0</p>
+        </header>
+
+        <!-- 主菜单 -->
+        <div id="main-menu" class="screen active">
+            <div class="menu-content">
+                <div class="mountain-icon">⛰️</div>
+                <h2>准备开始你的鳌太穿越之旅</h2>
+                <p class="intro-text">
+                    鳌太线是中国最具挑战性的徒步路线之一。<br>
+                    全程59公里，累计爬升2075米，最高海拔3475米。<br>
+                    你需要管理体力、食物和水源，应对恶劣天气，<br>
+                    穿越8个危险节点，最终到达太白山景区。
+                </p>
+                <div class="danger-warning">
+                    ⚠️ 警告：鳌太线年均数起遇难事故，请谨慎决策！
+                </div>
+                <div class="menu-buttons">
+                    <button id="btn-new-game" class="btn btn-primary">🎮 开始新游戏</button>
+                    <button id="btn-continue" class="btn btn-secondary" disabled>📂 继续游戏</button>
+                    <button id="btn-achievements" class="btn btn-warning">🏆 成就</button>
+                    <button id="btn-help" class="btn btn-info">❓ 游戏说明</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 装备选择界面 -->
+        <div id="equipment-screen" class="screen">
+            <h2>🎒 选择你的装备</h2>
+            <p class="hint">合理搭配装备，负重会影响移动消耗。恶劣天气需要更好的装备！</p>
+            
+            <div class="equipment-categories">
+                <div class="category">
+                    <h3>🎒 背包</h3>
+                    <div class="item-list" id="backpack-list"></div>
+                </div>
+                <div class="category">
+                    <h3>👕 衣物</h3>
+                    <div class="item-list" id="clothing-list"></div>
+                </div>
+                <div class="category">
+                    <h3>🔧 工具</h3>
+                    <div class="item-list" id="tool-list"></div>
+                </div>
+                <div class="category">
+                    <h3>🍖 食物</h3>
+                    <div class="item-list" id="food-list"></div>
+                </div>
+                <div class="category">
+                    <h3>💧 水源</h3>
+                    <div class="item-list" id="water-list"></div>
+                </div>
+            </div>
+
+            <div class="equipment-summary">
+                <div class="stat-row">
+                    <span>已选装备:</span>
+                    <span id="selected-count">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>总负重:</span>
+                    <span id="total-weight">0</span> kg
+                </div>
+                <div class="stat-row">
+                    <span>剩余点数:</span>
+                    <span id="remaining-points">100</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="btn-start-journey" class="btn btn-primary" disabled>🚀 开始穿越</button>
+                <button id="btn-back-menu" class="btn btn-secondary">↩️ 返回</button>
+            </div>
+        </div>
+
+        <!-- 游戏主界面 -->
+        <div id="game-screen" class="screen">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="location-info">
+                    <span class="location-icon">📍</span>
+                    <span id="current-location">塘口村</span>
+                </div>
+                <div class="day-info">
+                    <span>第 <span id="current-day">1</span> 天</span>
+                    <span id="current-weather">☀️ 晴天 15°C</span>
+                </div>
+            </div>
+
+            <!-- 详细状态面板 -->
+            <div class="detailed-status">
+                <div class="status-row">
+                    <div class="status-item">
+                        <span class="status-label">🌡️ 体温</span>
+                        <span class="status-value" id="body-temp">37.0°C</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">💦 湿身</span>
+                        <span class="status-value" id="wetness">0%</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">😫 疲劳</span>
+                        <span class="status-value" id="fatigue">0%</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">🧠 理智</span>
+                        <span class="status-value" id="sanity">100%</span>
+                    </div>
+                </div>
+                <div class="status-effects" id="status-effects">
+                    <!-- 状态效果标签将在这里显示 -->
+                </div>
+            </div>
+
+            <!-- 资源面板 -->
+            <div class="resources-panel">
+                <div class="resource-item">
+                    <span class="resource-icon">💪</span>
+                    <div class="resource-bar">
+                        <div id="stamina-bar" class="bar-fill stamina" style="width: 100%"></div>
+                    </div>
+                    <span id="stamina-value">100</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">🍖</span>
+                    <div class="resource-bar">
+                        <div id="food-bar" class="bar-fill food" style="width: 100%"></div>
+                    </div>
+                    <span id="food-value">100</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">💧</span>
+                    <div class="resource-bar">
+                        <div id="water-bar" class="bar-fill water" style="width: 100%"></div>
+                    </div>
+                    <span id="water-value">100</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">😊</span>
+                    <div class="resource-bar">
+                        <div id="mood-bar" class="bar-fill mood" style="width: 100%"></div>
+                    </div>
+                    <span id="mood-value">50</span>
+                </div>
+            </div>
+
+            <!-- 主游戏区域 -->
+            <div class="game-main">
+                <!-- 地图区域 -->
+                <div class="map-section">
+                    <h3>🗺️ 路线图</h3>
+                    <div id="map-container" class="map-container">
+                        <!-- 地图节点由JS动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 事件日志 -->
+                <div class="log-section">
+                    <h3>📜 事件日志</h3>
+                    <div id="event-log" class="event-log">
+                        <div class="log-entry">欢迎来到鳌太线！准备好开始你的穿越之旅了吗？</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 行动按钮 -->
+            <div class="action-panel">
+                <button id="btn-move" class="btn btn-primary">🚶 前进</button>
+                <button id="btn-rest" class="btn btn-secondary">😴 休息</button>
+                <button id="btn-eat" class="btn btn-success">🍽️ 进食</button>
+                <button id="btn-drink" class="btn btn-info">🥤 喝水</button>
+                <button id="btn-inventory" class="btn btn-warning">🎒 背包</button>
+                <button id="btn-save" class="btn btn-save">💾 存档</button>
+            </div>
+        </div>
+
+        <!-- 移动选择界面 -->
+        <div id="move-screen" class="screen modal">
+            <div class="modal-content">
+                <h3>选择前进路线</h3>
+                <div id="route-options" class="route-options">
+                    <!-- 路线选项由JS动态生成 -->
+                </div>
+                <button id="btn-cancel-move" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+
+        <!-- 事件界面 -->
+        <div id="event-screen" class="screen modal">
+            <div class="modal-content">
+                <div id="event-icon" class="event-icon">⚡</div>
+                <h3 id="event-title">事件发生</h3>
+                <p id="event-description">事件描述...</p>
+                <div id="event-choices" class="event-choices">
+                    <!-- 选项由JS动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 背包界面 -->
+        <div id="inventory-screen" class="screen modal">
+            <div class="modal-content">
+                <h3>🎒 背包</h3>
+                <div id="inventory-list" class="inventory-list">
+                    <!-- 物品列表由JS动态生成 -->
+                </div>
+                <button id="btn-close-inventory" class="btn btn-secondary">关闭</button>
+            </div>
+        </div>
+
+        <!-- 游戏结束界面 -->
+        <div id="game-over-screen" class="screen modal">
+            <div class="modal-content">
+                <div id="end-icon" class="end-icon">🏆</div>
+                <h2 id="end-title">游戏结束</h2>
+                <p id="end-description">...</p>
+                <div id="end-stats" class="end-stats">
+                    <!-- 统计信息 -->
+                </div>
+                <div class="action-buttons">
+                    <button id="btn-restart" class="btn btn-primary">🔄 重新开始</button>
+                    <button id="btn-main-menu" class="btn btn-secondary">📋 主菜单</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 帮助界面 -->
+        <div id="help-screen" class="screen modal">
+            <div class="modal-content">
+                <h2>📖 游戏说明</h2>
+                <div class="help-content">
+                    <h4>🎯 游戏目标</h4>
+                    <p>从塘口村出发，穿越8个节点，最终到达太白山景区。全程59公里，最高海拔3475米。</p>
+                    
+                    <h4>📊 核心属性</h4>
+                    <ul>
+                        <li><strong>体力值：</strong>移动和应对事件会消耗，休息可恢复</li>
+                        <li><strong>饱食度：</strong>每天自动消耗，进食可补充</li>
+                        <li><strong>水分值：</strong>移动和天气影响消耗，喝水可补充</li>
+                        <li><strong>心情值：</strong>影响事件结果，成功移动和休息可提升</li>
+                        <li><strong>体温：</strong>受天气和湿身影响，35-42°C为正常范围</li>
+                        <li><strong>湿身程度：</strong>雨天或涉水会增加，导致体温流失</li>
+                        <li><strong>疲劳度：</strong>移动累积，过高会影响判断力</li>
+                        <li><strong>理智值：</strong>恐慌或恶劣环境会降低，影响决策</li>
+                    </ul>
+                    
+                    <h4>🌤️ 天气系统</h4>
+                    <ul>
+                        <li><strong>晴天：</strong>正常移动，注意防晒和补水</li>
+                        <li><strong>多云：</strong>天气凉爽，适合行进</li>
+                        <li><strong>小雨：</strong>移动消耗+20%，路面湿滑</li>
+                        <li><strong>大雨：</strong>移动消耗+50%，失温风险增加</li>
+                        <li><strong>大雾：</strong>极易迷路，移动消耗+40%</li>
+                        <li><strong>小雪：</strong>移动消耗+60%，寒冷刺骨</li>
+                        <li><strong>暴风雪：</strong>极度危险，移动消耗+150%，可能致命</li>
+                        <li><strong>雷暴：</strong>山脊极度危险，有雷击风险</li>
+                    </ul>
+                    
+                    <h4>⛰️ 地形系统</h4>
+                    <ul>
+                        <li><strong>草甸：</strong>平坦，行走舒适</li>
+                        <li><strong>碎石坡：</strong>容易扭伤，移动缓慢</li>
+                        <li><strong>陡峭岩壁：</strong>需要攀爬，极易滑坠</li>
+                        <li><strong>山脊：</strong>风大寒冷，暴露感强</li>
+                        <li><strong>灌木丛：</strong>可能有野生动物</li>
+                        <li><strong>积雪区：</strong>深雪难行，容易失温</li>
+                        <li><strong>流石滩：</strong>碎石流动，极度危险</li>
+                    </ul>
+                    
+                    <h4>⚠️ 状态效果</h4>
+                    <ul>
+                        <li><strong>中暑：</strong>体温过高，判断力下降</li>
+                        <li><strong>失温：</strong>体温过低，可能致命</li>
+                        <li><strong>高原反应：</strong>海拔3000m以上常见</li>
+                        <li><strong>受伤：</strong>移动速度降低</li>
+                        <li><strong>恐慌：</strong>判断力大幅下降</li>
+                        <li><strong>脱水：</strong>严重缺水</li>
+                        <li><strong>冻伤：</strong>肢体冻伤，行动困难</li>
+                        <li><strong>湿身：</strong>体温流失加快</li>
+                    </ul>
+                    
+                    <h4>🎒 装备效果</h4>
+                    <ul>
+                        <li><strong>背包：</strong>增加携带容量</li>
+                        <li><strong>衣物：</strong>保暖、防雨、影响湿身恢复</li>
+                        <li><strong>登山杖：</strong>节省20%体力消耗</li>
+                        <li><strong>指南针/GPS：</strong>降低迷路概率</li>
+                        <li><strong>急救包：</strong>治疗伤势</li>
+                        <li><strong>绳索：</strong>降低攀爬风险</li>
+                        <li><strong>头灯：</strong>夜间行动</li>
+                    </ul>
+                    
+                    <h4>🏅 成就系统</h4>
+                    <p>完成特定挑战可解锁成就，成就将永久保存：</p>
+                    <ul>
+                        <li><strong>生存类：</strong>极速穿越、轻装上阵、铁人模式、生存专家</li>
+                        <li><strong>探索类：</strong>摄影师、探索者、露营大师</li>
+                        <li><strong>道德类：</strong>助人为乐、敬畏自然、环保卫士</li>
+                        <li><strong>特殊类：</strong>暴风雪幸存者、完美通关、幸运儿、野外医生、导航专家</li>
+                    </ul>
+                    
+                    <h4>💡 生存技巧</h4>
+                    <ul>
+                        <li>合理规划路线，不要贸然冒险</li>
+                        <li>注意天气变化，恶劣天气时休息</li>
+                        <li>保持体温，湿身时尽快更换衣物或生火</li>
+                        <li>高海拔地区注意高原反应</li>
+                        <li>保持资源平衡，不要过度消耗</li>
+                        <li>营地可以更好地恢复体力</li>
+                        <li>帮助他人可能获得道德加成</li>
+                    </ul>
+                    
+                    <h4>⚡ 连锁反应示例</h4>
+                    <p><strong>大雾天气 → 迷路 → 选择错误路线 → 进入危险地形 → 滑坠 → 受伤 → 移动速度下降 → 无法在天黑前到达营地 → 夜间被迫扎营 → 失温风险增加 → 生死抉择</strong></p>
+                    
+                    <h4>📷 实景查看与相册系统</h4>
+                    <ul>
+                        <li><strong>实景查看：</strong>点击"📷 实景"按钮查看当前节点的风景，消耗15分钟，恢复5-15心情值</li>
+                        <li><strong>拍照留念：</strong>在实景查看时拍照，保存到相册，获得额外心情奖励</li>
+                        <li><strong>风景相册：</strong>主菜单可查看收集的所有照片，按节点分类</li>
+                        <li><strong>特殊景观：</strong>特定天气和时间条件下可触发特殊风景事件
+                            <ul>
+                                <li>☀️ 晴天+鳌山大梁 = 云海奇观</li>
+                                <li>🌠 夜间+2900营地 = 流星雨</li>
+                                <li>🌫️ 大雾+导航架 = 神秘氛围</li>
+                                <li>❄️ 雪天+药王庙 = 雪中古庙</li>
+                                <li>🌅 黄昏+水窝子营地 = 金色夕阳</li>
+                                <li>🦅 晴天+麦秸岭 = 雄鹰展翅</li>
+                            </ul>
+                        </li>
+                        <li><strong>摄影师成就：</strong>收集所有9个节点的照片解锁</li>
+                    </ul>
+                </div>
+                <button id="btn-close-help" class="btn btn-secondary">关闭</button>
+            </div>
+        </div>
+
+        <!-- 成就界面 -->
+        <div id="achievements-screen" class="screen modal">
+            <div class="modal-content">
+                <h2>🏆 成就</h2>
+                <div id="achievements-list" class="achievements-list">
+                    <!-- 成就列表由JS动态生成 -->
+                </div>
+                <button id="btn-close-achievements" class="btn btn-secondary">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="visuals.js"></script>
+    <script src="game.js"></script>
+    <script src="scenery.js"></script>
+</body>
+</html>
